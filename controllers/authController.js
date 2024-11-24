@@ -4,11 +4,18 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', 
+  service: 'gmail', // usando o serviço Gmail
   auth: {
-    user: process.env.EMAIL, 
-    pass: process.env.EMAIL_PASSWORD, 
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  pool: true, 
+  maxConnections: 5,
+  connectionTimeout: 5000, 
+  greetingTimeout: 5000, 
 });
 
 const register = async (req, res) => {
@@ -34,7 +41,6 @@ const register = async (req, res) => {
   }
 };
 
-// Função de login (login)
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -77,10 +83,10 @@ const forgotPassword = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+    const resetLink = `${process.env.CLIENT_URL}/api/auth/reset-password?token=${token}`;
 
     const mailOptions = {
-      from: process.env.EMAIL,
+      from: process.env.EMAIL, 
       to: email,
       subject: 'Recuperação de senha',
       html: `
@@ -95,14 +101,14 @@ const forgotPassword = async (req, res) => {
 
     res.status(200).json({ message: 'E-mail de recuperação enviado com sucesso!' });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ error: 'Erro ao enviar e-mail de recuperação.' });
   }
 };
 
-
 const resetPassword = async (req, res) => {
   try {
-    const { token } = req.params; // Token JWT vindo do link
+    const { token } = req.query; 
     const { newPassword, confirmNewPassword } = req.body;
 
     if (!newPassword || !confirmNewPassword) {
@@ -130,7 +136,7 @@ const resetPassword = async (req, res) => {
     if (error.name === 'TokenExpiredError') {
       return res.status(400).json({ error: 'Token expirado.' });
     }
-    res.status(500).json({ error: 'Erro ao redefinir senha.' });
+    res.status(500).json({ error: 'Erro ao redefinir senha: ' + error.message });
   }
 };
 
