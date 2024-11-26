@@ -1,5 +1,5 @@
 const express = require('express');
-const authenticate = require('../middlewares/authMiddleware')
+const {authenticate} = require('../middlewares/authMiddleware')
 
 const {createTransaction, getTransactions,
     editTransaction, deleteTransaction} = require('../controllers/transactionController');
