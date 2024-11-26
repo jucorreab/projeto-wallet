@@ -1,7 +1,9 @@
-const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+
+const User = require('../models/userModel');
+const authStorage = require('../storage/authStorage')
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // usando o serviço Gmail
@@ -61,7 +63,9 @@ const login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(200).json({ message: 'Login bem-sucedido', token });
+    authStorage.saveToken(token);
+
+    res.status(200).json({ message: 'Login bem-sucedido'});
   } catch (error) {
     res.status(500).json({ error: 'Erro ao realizar login.' });
   }
