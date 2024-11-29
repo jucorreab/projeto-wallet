@@ -106,7 +106,6 @@ export default function EditTransaction() {
         headers: getAuthHeader(),
       });
       const transaction: Transaction = data.transaction;
-      console.log(transaction);
       setDefaultDate(DateFormat.formatDate(String(transaction.date)));
       setDescription(transaction.description);
       setObs(transaction.obs);

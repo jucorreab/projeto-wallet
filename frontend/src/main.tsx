@@ -10,6 +10,7 @@ import Home from "./views/home";
 import AddTransaction from "./views/addTransaction";
 import EditTransaction from "./views/editTransaction";
 import RecoverPassword from "./views/recoverPassword";
+import ResetPassword from "./views/resetPassword";
 
 const root = document.getElementById("root") as HTMLElement;
 
@@ -23,6 +24,7 @@ ReactDOM.createRoot(root).render(
         <Route path="/adicionarTransação" element={<AddTransaction />} />
         <Route path="/editarTransação/:id" element={<EditTransaction />} />
         <Route path="/recuperarSenha" element={<RecoverPassword />} />
+        <Route path="/resetarSenha/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   </ThemeProvider>

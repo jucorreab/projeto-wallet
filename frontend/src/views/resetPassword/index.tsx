@@ -2,14 +2,17 @@ import * as S from "./style";
 import pigImage from "../../assets/pig.png";
 import logoImage from "../../assets/logo.png";
 import { Button, Input, Text, Toast } from "../../components";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useState } from "react";
 import api from "../../api";
 import { AxiosError } from "axios";
 
-export default function ResetPassword() {
+export default function RecoverPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const { token } = useParams();
+
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -18,14 +21,17 @@ export default function ResetPassword() {
     navigate("/", { replace: true });
   };
 
-  const handleSendEmail = async () => {
+  const handleResetPassword = async () => {
     try {
-      const response = await api.post("/auth/forgot-password", {
-        email,
+      const response = await api.post(`/auth/reset-password/${token}`, {
+        newPassword: password,
+        confirmNewPassword: passwordConfirmation,
       });
+      setError("");
       setSuccess(response.data.message);
     } catch (error) {
       if (error instanceof AxiosError) {
+        setSuccess("");
         if (error.response) {
           setError(error.response?.data.error);
         } else {
@@ -52,24 +58,35 @@ export default function ResetPassword() {
           </Text>
         </S.Logo>
         <S.FormContainer>
-          <Text size="H1" weight="BOLD" color="GREEN_DARK">
-            Recuperar senha
-          </Text>
-          <S.InfoTextContainer>
-            <Text size="P" weight="REGULAR" color="BLACK">
-              Enviaremos um email para você com as instruções de recuperação de
-              senha.
+          <S.Title>
+            <Text size="H1" weight="BOLD" color="GREEN_DARK">
+              Resetar senha
             </Text>
-          </S.InfoTextContainer>
+          </S.Title>
           <S.InputContainer>
             <Input
-              placeholder="Insira seu email."
-              onChange={setEmail}
+              placeholder="Insira sua senha."
+              onChange={(value) => {
+                setPassword(value);
+              }}
+              type="user_password"
+              label="Senha"
+              hideLeftIcon
+            />
+          </S.InputContainer>
+          <S.InputContainer>
+            <Input
+              placeholder="Confirme sua senha."
+              onChange={(value) => {
+                setPasswordConfirmation(value);
+              }}
+              type="user_password"
+              label="Confirmação da senha"
               hideLeftIcon
             />
           </S.InputContainer>
           <S.ButtonContainer>
-            <Button text="Enviar" onClick={handleSendEmail} />
+            <Button text="Enviar" onClick={handleResetPassword} />
           </S.ButtonContainer>
           {!!error && <Toast message={error} />}
           {!!success && <Toast message={success} type="SUCCESS" />}
