@@ -1,5 +1,6 @@
 import * as S from "./style";
 import { Text } from "../text";
+import { MoneyFormat } from "../../utils/moneyFormat";
 
 type Props = {
   label: string;
@@ -14,7 +15,7 @@ export function CardMoney({ type, label, value }: Props) {
       </Text>
       <S.ValueContainer>
         <Text size="H2" weight="REGULAR" color="WHITE">
-          {value}
+          {MoneyFormat.formatCurrency(value)}
         </Text>
       </S.ValueContainer>
     </S.Card>

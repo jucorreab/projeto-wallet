@@ -7,7 +7,8 @@ import "./styles.css";
 import Login from "./views/login";
 import Register from "./views/register";
 import Home from "./views/home";
-import TransactionDetails from "./views/transactionDetails";
+import AddTransaction from "./views/addTransaction";
+import EditTransaction from "./views/editTransaction";
 import RecoverPassword from "./views/recoverPassword";
 
 const root = document.getElementById("root") as HTMLElement;
@@ -19,7 +20,8 @@ ReactDOM.createRoot(root).render(
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Register />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/detalhesDaTransação" element={<TransactionDetails />} />
+        <Route path="/adicionarTransação" element={<AddTransaction />} />
+        <Route path="/editarTransação/:id" element={<EditTransaction />} />
         <Route path="/recuperarSenha" element={<RecoverPassword />} />
       </Routes>
     </BrowserRouter>

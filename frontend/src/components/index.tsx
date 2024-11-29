@@ -5,3 +5,4 @@ export { Header } from "./header";
 export { CardMoney } from "./cardMoney";
 export { TransactionItem } from "./transactionItem";
 export { RadioButton } from "./radioButton";
+export { Toast } from "./toast";

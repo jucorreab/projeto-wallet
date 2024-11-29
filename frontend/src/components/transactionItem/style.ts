@@ -1,7 +1,8 @@
 import styled, { css } from "styled-components";
+import { TransactionType } from "../../@types/transaction";
 
 export type ItemProps = {
-  type: "IN" | "OUT";
+  type: TransactionType;
 };
 
 export const Item = styled.div`
@@ -20,7 +21,7 @@ export const TextContainer = styled.div`
 export const Icon = styled.i<ItemProps>`
   ${({ type, theme }) => css`
     font-size: 2.4rem;
-    color: ${type === "IN" ? theme.COLORS.GREEN : theme.COLORS.RED};
+    color: ${type === "Receita" ? theme.COLORS.GREEN : theme.COLORS.RED};
   `};
 `;
 

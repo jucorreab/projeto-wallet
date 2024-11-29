@@ -5,6 +5,7 @@ const trasanctionSchema = new mongoose.Schema({
     description: {type: String, required: true},
     value: {type: mongoose.Schema.Types.Decimal128, required: true},
     date: {type: Date, default: Date.now, required: true},
+    obs: {type: String, required: false},
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

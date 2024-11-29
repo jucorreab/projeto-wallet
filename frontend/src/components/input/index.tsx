@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as S from "./style";
+import Inputmask from "inputmask";
 
 import { Text } from "../text";
 
 type InputProps = {
-  onChange: (value: string) => void;
+  onChange: (value: any) => void;
   placeholder: string;
-  type?: "default" | "user_password" | "user_email";
+  type?: "default" | "user_password" | "user_email" | "date";
   hideLeftIcon?: boolean;
+  defaultValue?: string;
   label?: string;
 };
 
@@ -16,10 +18,12 @@ export function Input({
   type = "default",
   hideLeftIcon,
   placeholder,
+  defaultValue,
   label,
 }: InputProps) {
   const [active, setIsActive] = useState(false);
   const [isShowingPassword, setIsShowingPassword] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFocus = () => {
     setIsActive(true);
@@ -79,7 +83,7 @@ export function Input({
         >
           {!hideLeftIcon && <S.Icon className="ph ph-lock-key" />}
           <S.Input
-            type={isShowingPassword ? "text" : ""}
+            type={isShowingPassword ? "text" : "password"}
             placeholder={placeholder}
             onChange={getValue}
           />
@@ -110,15 +114,56 @@ export function Input({
           onFocus={handleFocus}
           onBlur={handleBlur}
         >
-          <S.Input type="text" placeholder={placeholder} onChange={getValue} />
+          <S.Input
+            type="text"
+            placeholder={placeholder}
+            onChange={getValue}
+            defaultValue={defaultValue}
+          />
         </S.InputContainer>
       </>
     );
   };
 
-  return type == "default"
-    ? renderDefaultInput()
-    : type == "user_email"
+  const renderDateInput = () => {
+    return (
+      <>
+        {label && (
+          <S.Label>
+            <Text size="P" weight="REGULAR" color="BLACK">
+              {label}
+            </Text>
+          </S.Label>
+        )}
+
+        <S.InputContainer
+          active={active}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        >
+          <S.Input
+            ref={inputRef} // Referência para aplicar a máscara
+            type="text"
+            placeholder={placeholder}
+            onChange={getValue}
+            defaultValue={defaultValue}
+          />
+        </S.InputContainer>
+      </>
+    );
+  };
+
+  useEffect(() => {
+    if (type === "date" && inputRef.current) {
+      Inputmask("99/99/9999").mask(inputRef.current); // Aplica a máscara de data
+    }
+  }, [type]);
+
+  return type === "date"
+    ? renderDateInput()
+    : type === "user_email"
     ? renderUserEmailInput()
-    : renderUserPasswordInput();
+    : type === "user_password"
+    ? renderUserPasswordInput()
+    : renderDefaultInput();
 }

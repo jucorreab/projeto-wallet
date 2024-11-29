@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 const User = require('../models/userModel');
-const authStorage = require('../storage/authStorage')
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // usando o serviço Gmail
@@ -22,10 +21,14 @@ const transporter = nodemailer.createTransport({
 
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, passwordConfirmation } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password | !passwordConfirmation) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    }
+
+    if (password !== passwordConfirmation) {
+      return res.status(400).json({ error: 'As senhas não coincidem.' });
     }
 
     const existingUser = await User.findOne({ email });
@@ -63,10 +66,13 @@ const login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    authStorage.saveToken(token);
-
-    res.status(200).json({ message: 'Login bem-sucedido'});
+    res.status(200).json({
+      message: 'Login bem-sucedido',
+      user,
+      token
+    });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Erro ao realizar login.' });
   }
 };

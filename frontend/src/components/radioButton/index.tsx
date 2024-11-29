@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as S from "./style";
+import { TransactionType } from "../../@types/transaction";
 
-export function RadioButton() {
+type Props = {
+  onChange: (type: TransactionType) => void;
+  defaultValue?: TransactionType;
+};
+
+export function RadioButton({ onChange, defaultValue }: Props) {
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
   const handleChange = (value: string) => {
+    onChange(value as TransactionType);
     setSelectedValue(value);
   };
+
+  useEffect(() => {
+    if (defaultValue) {
+      setSelectedValue(defaultValue);
+    }
+  }, [defaultValue]);
 
   return (
     <S.RadioGroup>
