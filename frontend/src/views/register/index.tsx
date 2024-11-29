@@ -33,6 +33,7 @@ export default function Register() {
         response.data.message +
           " Volte a tela de login e insira suas credenciais."
       );
+      setError("");
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
