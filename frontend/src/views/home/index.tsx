@@ -13,10 +13,14 @@ import { Transaction } from "../../@types/transaction";
 import api from "../../api";
 import { AxiosError } from "axios";
 import { AuthStorage } from "../../storage/authStorage";
+import { MoneyFormat } from "../../utils/moneyFormat";
 
 export default function Home() {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>();
+  const [totalEntries, setTotalEntries] = useState(0);
+  const [totalExists, setTotalExists] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [error, setError] = useState("");
 
   const goAddTransaction = () => {
@@ -33,7 +37,30 @@ export default function Home() {
       const { data } = await api.get("/transactions", {
         headers: getAuthHeader(),
       });
-      setTransactions(data.transactions);
+
+      const transactions: Transaction[] = data.transactions;
+
+      const entries = transactions.reduce((sum, item) => {
+        if (item.transactionType === "Receita") {
+          return sum + MoneyFormat.getValueFromDatabase(item.value);
+        }
+        return sum;
+      }, 0);
+
+      setTotalEntries(entries);
+
+      const exists = transactions.reduce((sum, item) => {
+        if (item.transactionType === "Despesa") {
+          return sum + MoneyFormat.getValueFromDatabase(item.value);
+        }
+        return sum;
+      }, 0);
+
+      setTotalExists(exists);
+
+      setBalance(entries - exists);
+
+      setTransactions(transactions);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
@@ -56,9 +83,21 @@ export default function Home() {
       <Header />
       <S.Container>
         <S.CardsContainer>
-          <CardMoney label="Saldo em dinheiro" value={1400} type="success" />
-          <CardMoney label="Total em receitas" value={2300} type="success" />
-          <CardMoney label="Total em despesas" value={900} type="danger" />
+          <CardMoney
+            label="Saldo em dinheiro"
+            value={balance}
+            type={balance < 0 ? "danger" : "success"}
+          />
+          <CardMoney
+            label="Total em receitas"
+            value={totalEntries}
+            type="success"
+          />
+          <CardMoney
+            label="Total em despesas"
+            value={totalExists}
+            type="danger"
+          />
         </S.CardsContainer>
         {!!error && <Toast message={error} />}
         <S.TransactionsHeader>
