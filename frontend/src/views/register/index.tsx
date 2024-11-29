@@ -14,6 +14,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const goBack = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -22,12 +23,16 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      await api.post("/auth/register", {
+      const response = await api.post("/auth/register", {
         name,
         email,
         password,
         passwordConfirmation,
       });
+      setSuccess(
+        response.data.message +
+          " Volte a tela de login e insira suas credenciais."
+      );
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
@@ -108,6 +113,7 @@ export default function Register() {
           <Button text="Cadastrar" onClick={() => handleRegister()} />
         </S.ButtonContainer>
         {!!error && <Toast message={error} />}
+        {!!success && <Toast message={success} type="SUCCESS" />}
       </S.ContentContainer>
     </S.Container>
   );
